@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Teacher manager</title>
+    <style>
+        .main_content {
+            width: 83ch;
+            margin: 0 auto;
+        }
+
+        table {
+            border: 1px solid #dededf;
+            height: 100%;
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            border-spacing: 1px;
+            text-align: center;
+        }
+
+        th {
+            border: 1px solid #dededf;
+            background-color: #eceff1;
+            color: #000000;
+            padding: 5px;
+        }
+
+        td {
+            border: 1px solid #dededf;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 5px;
+        }
+
+        #img-create-button {
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <header style="text-align: center; margin-bottom: 10px">
+        <h1>Teacher manager</h1>
+        <button id="button-create-teacher">
+            <img src="/static/plus-icon.svg" alt="Button to create a teacher" id="img-create-button"/>
+        </button>
+    </header>
+    <main class="main_content">
+        <table>
+            <thead>
+                <tr>
+                    <th>Full name</th>
+                    <th>Username</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.full_name }}</td>
+                        <td>{{ teacher.username }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <dialog id="form-create-teacher">
+                <form style="display: flex; flex-direction: column; justify-content: center; align-items: center; row-gap: 10px">
+                    <label for="full_name">Full name</label>
+                    <input type="text" id="full_name" name="full_name" required>
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                    <button type="submit">Create</button>
+                    <button type="button" id="button-close-create-teacher">Cancel</button>
+                </form>
+        </dialog>
+    </main>
+
+    <script>
+        const buttonCreateTeacher = document.getElementById('button-create-teacher');
+        const buttonCloseCreateTeacher = document.getElementById('button-close-create-teacher');
+        const formCreateTeacher = document.getElementById('form-create-teacher');
+
+        buttonCreateTeacher.addEventListener('click', () => {
+            formCreateTeacher.showModal();
+        });
+
+        buttonCloseCreateTeacher.addEventListener('click', () => {
+            formCreateTeacher.close();
+        });
+    </script>
+</body>
+</html>
