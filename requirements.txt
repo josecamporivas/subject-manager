@@ -1,0 +1,7 @@
+flask
+flask-login
+redis
+sirope
+jinja2
+python-dotenv
+werkzeug
