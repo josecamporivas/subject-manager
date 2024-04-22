@@ -7,6 +7,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Teacher manager</title>
     <style>
+        #header-style {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
         .main_content {
             width: 83ch;
             margin: 0 auto;
@@ -36,26 +41,62 @@
             padding: 5px;
         }
 
+        .actions-cell{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            column-gap: 8px;
+        }
+
         #img-create-button {
             cursor: pointer;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
+        }
+
+        #dialog-create-teacher{
+            width: 300px;
+            border-radius: 10px;
+        }
+
+        #dialog-create-teacher::backdrop{
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        #form-create-teacher, #form-edit-teacher {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            row-gap: 10px;
+        }
+
+        #error-message-create-teacher, #error-message-edit-teacher{
+            display: none;
+            background-color: #fd2d2d;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <header style="text-align: center; margin-bottom: 10px">
-        <h1>Teacher manager</h1>
+    <header id="header-style">
+        <h1>TEACHER MANAGER</h1>
         <button id="button-create-teacher">
             <img src="/static/plus-icon.svg" alt="Button to create a teacher" id="img-create-button"/>
         </button>
     </header>
     <main class="main_content">
-        <table>
+        <table id="table-teachers">
             <thead>
                 <tr>
                     <th>Full name</th>
                     <th>Username</th>
+                    <th>Subject</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,37 +104,203 @@
                     <tr>
                         <td>{{ teacher.full_name }}</td>
                         <td>{{ teacher.username }}</td>
+                        <td>{{ teacher.subject }}</td>
+                        <td class="actions-cell">
+                            <form class="form-edit-teacher" >
+                                <button>Edit</button>
+                            </form>
+                            <form class="form-delete-teacher">
+                                <input type="hidden" name="username" value="{{ teacher.username }}">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <dialog id="form-create-teacher">
-                <form style="display: flex; flex-direction: column; justify-content: center; align-items: center; row-gap: 10px">
-                    <label for="full_name">Full name</label>
-                    <input type="text" id="full_name" name="full_name" required>
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                    <button type="submit">Create</button>
-                    <button type="button" id="button-close-create-teacher">Cancel</button>
-                </form>
+        <dialog id="dialog-create-teacher">
+            <form id="form-create-teacher">
+                <label for="full_name">Full name</label>
+                <input type="text" id="full_name" name="full_name" required>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <label for="subject">Subject</label>
+                <select id="subject" name="subject" required style="text-align: center">
+                     <option value="" selected disabled hidden>Choose one</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.name }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Edit</button>
+                <button type="button" id="button-close-create-teacher">Cancel</button>
+                <p id="error-message-create-teacher">Error: <span id="error-create-teacher"></span></p>
+            </form>
+        </dialog>
+
+        <dialog id="dialog-edit-teacher">
+            <form id="form-edit-teacher">
+                <label for="full_name_edit">Full name</label>
+                <input type="text" id="full_name_edit" name="full_name" required>
+                <label for="username_edit">Username</label>
+                <input type="text" id="username_edit" name="username" required readonly>
+                <label for="password_edit">Password</label>
+                <input type="password" id="password_edit" name="password">
+                <label for="subject_edit">Subject</label>
+                <select id="subject_edit" name="subject" required style="text-align: center">
+                     <option value="" selected disabled hidden>Choose one</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.name }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Create</button>
+                <button type="button" id="button-close-edit-teacher">Cancel</button>
+                <p id="error-message-edit-teacher">Error: <span id="error-edit-teacher"></span></p>
+            </form>
         </dialog>
     </main>
 
     <script>
-        const buttonCreateTeacher = document.getElementById('button-create-teacher');
-        const buttonCloseCreateTeacher = document.getElementById('button-close-create-teacher');
-        const formCreateTeacher = document.getElementById('form-create-teacher');
+        const $ = (selector) => document.querySelector(selector);
+        const $$ = (selector) => document.querySelectorAll(selector);
 
-        buttonCreateTeacher.addEventListener('click', () => {
-            formCreateTeacher.showModal();
+        const dialogCreateTeacher = $('#dialog-create-teacher');
+        const formCreateTeacher = $('#form-create-teacher');
+        const errorMessageCreateTeacher = $('#error-message-create-teacher');
+
+        const dialogEditTeacher = $('#dialog-edit-teacher');
+        const formEditTeacher = $('#form-edit-teacher');
+        const errorMessageEditTeacher = $('#error-message-edit-teacher');
+
+        $('#button-create-teacher').addEventListener('click', () => {
+            dialogCreateTeacher.showModal();
         });
 
-        buttonCloseCreateTeacher.addEventListener('click', () => {
-            formCreateTeacher.close();
+        $('#button-close-create-teacher').addEventListener('click', () => {
+            dialogCreateTeacher.close();
         });
+
+        $('#button-close-edit-teacher').addEventListener('click', () => {
+            dialogEditTeacher.close();
+        });
+
+        formCreateTeacher.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            errorMessageCreateTeacher.style.display = 'none';
+
+            const formData = new FormData(event.target);
+            console.log(Object.fromEntries(formData));
+
+            const response = await fetch('/teachers/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                console.error('Error creating teacher');
+                $('#error-create-teacher').textContent = error.message;
+                errorMessageCreateTeacher.style.display = 'block';
+                return
+            }
+
+            const teacherInfo = await response.json();
+            addRowToTable(teacherInfo);
+            dialogCreateTeacher.close();
+            formCreateTeacher.reset();
+        });
+
+        formEditTeacher.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            errorMessageEditTeacher.style.display = 'none';
+
+            const formData = new FormData(event.target);
+            const editedData = Object.fromEntries(formData);
+
+            const response = await fetch(`/teachers/${editedData.username}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(editedData)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                console.error('Error editing teacher');
+                $('#error-edit-teacher').textContent = error.message;
+                errorMessageEditTeacher.style.display = 'block';
+                return
+            }
+
+            const teacherInfo = await response.json();
+            updateRowToTable(teacherInfo);  //TODO: Update row
+            dialogEditTeacher.close();
+            formEditTeacher.reset();
+        });
+
+        Array.from($$('.form-edit-teacher')).forEach(form => {
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const rowTeacher = event.target.parentElement.parentElement;
+                const full_name = rowTeacher.children[0].textContent;
+                const username = rowTeacher.children[1].textContent;
+                const subject = rowTeacher.children[2].textContent;
+                formEditTeacher.children.full_name_edit.value = full_name;
+                formEditTeacher.children.username_edit.value = username;
+                console.log(formEditTeacher.children.subject_edit)
+                formEditTeacher.children.subject_edit.value = subject;
+                dialogEditTeacher.showModal();
+                console.log({full_name, username, subject});
+            });
+        });
+
+        Array.from($$('.form-delete-teacher')).forEach(form => {
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const username = event.target.username.value;
+
+                const response = await fetch(`/teachers/${username}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    console.error('Error deleting teacher');
+                    //TODO: Show error message
+                    return
+                }
+
+                const row = event.target.parentElement.parentElement;
+                row.remove();
+            });
+        })
+
+        function addRowToTable(teacherInfo) {   //TODO: Add buttons to row
+            const row = $('#table-teachers').insertRow(-1);
+            const fullNameCell = row.insertCell(0);
+            const usernameCell = row.insertCell(1);
+            const subjectCell = row.insertCell(2);
+
+            fullNameCell.textContent = teacherInfo.full_name;
+            usernameCell.textContent = teacherInfo.username;
+            subjectCell.textContent = teacherInfo.subject;
+        }
+
+        function updateRowToTable(teacherInfo){
+            Array.from($('#table-teachers').rows).forEach(row => {
+                if(row.cells[1].textContent === teacherInfo.username){
+                    row.cells[0].textContent = teacherInfo.full_name;
+                    row.cells[2].textContent = teacherInfo.subject;
+                }
+            });
+        }
     </script>
 </body>
 </html>
