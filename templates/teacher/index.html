@@ -287,6 +287,18 @@
             const fullNameCell = row.insertCell(0);
             const usernameCell = row.insertCell(1);
             const subjectCell = row.insertCell(2);
+            const actionsCell = row.insertCell(3);
+            actionsCell.classList.add('actions-cell');
+
+            //TODO: Add event listeners to forms. its better to create elements with javascript
+            actionsCell.innerHTML = `
+                            <form class="form-edit-teacher" >
+                                <button>Edit</button>
+                            </form>
+                            <form class="form-delete-teacher">
+                                <input type="hidden" name="username" value="${teacherInfo.username}">
+                                <button type="submit">Delete</button>
+                            </form>`
 
             fullNameCell.textContent = teacherInfo.full_name;
             usernameCell.textContent = teacherInfo.username;
