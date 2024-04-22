@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Subject manager</title>
+    <style>
+        #header-style {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .main_content {
+            width: 83ch;
+            margin: 0 auto;
+        }
+
+        table {
+            border: 1px solid #dededf;
+            height: 100%;
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            border-spacing: 1px;
+            text-align: center;
+        }
+
+        th {
+            border: 1px solid #dededf;
+            background-color: #eceff1;
+            color: #000000;
+            padding: 5px;
+        }
+
+        td {
+            border: 1px solid #dededf;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 5px;
+        }
+
+        .actions-cell{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            column-gap: 8px;
+        }
+
+        #img-create-button {
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <header id="header-style">
+        <h1>SUBJECT MANAGER</h1>
+        <button id="button-create-subject">
+            <img src="/static/plus-icon.svg" alt="Button to create a subject" id="img-create-button"/>
+        </button>
+    </header>
+    <main class="main_content">
+        <table id="table-subjects">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Classroom</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.name }}</td>
+                        <td>{{ subject.classroom }}</td>
+                        <td class="actions-cell">
+                            <button>Edit</button>
+                            <form class="form-delete-subject">
+                                <input type="hidden" name="name" value="{{ subject.name }}">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <dialog id="dialog-create-subject">
+            <form id="form-create-subject">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name">
+                <label for="classroom">Classroom</label>
+                <input type="text" id="classroom" name="classroom">
+                <button type="submit">Create</button>
+                <button type="button" id="button-close-create-subject">Cancel</button>
+            </form>
+        </dialog>
+    </main>
+    <script>
+        const buttonCreateSubject = document.getElementById('button-create-subject');
+        const buttonCloseCreateSubject = document.getElementById('button-close-create-subject');
+        const dialogCreateSubject = document.getElementById('dialog-create-subject');
+        const formCreateSubject = document.getElementById('form-create-subject');
+        const formDeleteSubject_all = document.getElementsByClassName('form-delete-subject');
+
+        const tableTeachers = document.getElementById('table-subjects');
+
+        buttonCreateSubject.addEventListener('click', () => {
+            dialogCreateSubject.showModal();
+        });
+
+        buttonCloseCreateSubject.addEventListener('click', () => {
+            dialogCreateSubject.close();
+        });
+
+        formCreateSubject.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            console.log(Object.fromEntries(formData));
+
+            const response = await fetch('/subjects/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            });
+
+            if (!response.ok) {
+                console.error('Error creating subject');
+                //TODO: Show error message
+                return
+            }
+
+            const subjectInfo = await response.json();
+            addRowToTable(subjectInfo);
+            dialogCreateSubject.close();
+            formCreateSubject.reset();
+        });
+
+        Array.from(formDeleteSubject_all).forEach(form => {
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                //TODO: Implement delete subject
+            });
+        })
+
+        function addRowToTable(subjectInfo) {   //TODO: add buttons to row
+            const row = tableTeachers.insertRow(-1);
+            const nameCell = row.insertCell(0);
+            const classroomCell = row.insertCell(1);
+
+            nameCell.textContent = subjectInfo.name;
+            classroomCell.textContent = subjectInfo.classroom;
+        }
+    </script>
+</body>
+</html>
