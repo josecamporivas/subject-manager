@@ -1,4 +1,5 @@
 import flask
+import flask_login
 from flask import Blueprint
 from sirope import Sirope
 
@@ -6,6 +7,7 @@ from models.Subject import Subject
 from models.Teacher import Teacher
 import json
 
+from utils.auth import get_current_user
 from utils.input_validators import check_empty_string
 
 teacher_bp = Blueprint('teacher_bp', __name__, url_prefix='/teachers', template_folder='templates')
@@ -13,7 +15,10 @@ srp = Sirope()
 
 
 @teacher_bp.route('/')
+@flask_login.login_required
 def index():
+    get_current_user()
+
     data = {
         'teachers': list(srp.load_all(Teacher)),
         'subjects': list(srp.load_all(Subject))
@@ -73,3 +78,35 @@ def delete(username):
         return {'message': 'Error deleting teacher'}, 500
 
     return {'message': 'Teacher deleted'}, 200
+
+
+# @app.route('/saludo', methods=['POST'])
+# def saludo():
+#     # nombre = flask.request.form.get('name')
+#     email = flask.request.form.get('email', "").strip()
+#     password = flask.request.form.get('password', "").strip()
+#     mensaje = flask.request.form.get('mensaje')
+#
+#     # if not nombre:
+#     #     nombre = "Anónimo"
+#
+#     usr = User.find(srp, email)
+#
+#     if usr:
+#         if not usr.compara_password(password):
+#             flask.flash("usuario no reconocido")
+#             return flask.redirect('/')
+#     else:
+#         usr = User(email, password)
+#         srp.save(usr)
+#
+#     flask_login.login_user(usr)
+#
+#     if not mensaje:
+#         mensaje = "Mensaje vacío"
+#
+#     data = Mensaje(usr.email, mensaje)
+#     srp.save(data)
+#
+#     flask_login.logout_user()
+#     return flask.redirect('/')

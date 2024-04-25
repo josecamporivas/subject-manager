@@ -39,6 +39,9 @@ class Teacher(flask_login.UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def get_id(self):
+        return self.username
+
     def to_dict(self):
         return {
             'full_name': self.full_name,
