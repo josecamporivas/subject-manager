@@ -4,9 +4,10 @@ import flask_login
 from dotenv import load_dotenv
 from os import getenv
 
+from blueprints.root_bp import root_bp
 from blueprints.subject_bp import subject_bp
 from blueprints.teacher_bp import teacher_bp
-from models.Teacher import Teacher
+from models.Admin import Admin
 
 load_dotenv()
 
@@ -20,38 +21,20 @@ def create_app():
     return flask_app, sirope_inst, login_manager
 
 app, srp, lm = create_app()
+app.register_blueprint(root_bp)
 app.register_blueprint(teacher_bp)
 app.register_blueprint(subject_bp)
 
 @lm.user_loader
 def load_user(id: str):
     print(f'Loading user {id}')
-    return srp.find_first(Teacher, lambda x: x.username == id)
+    return srp.find_first(Admin, lambda x: x.username == id)
 
 @lm.unauthorized_handler
 def unauthorized():
     print('Unauthorized')
     flask.flash("Unauthorized")
     return flask.redirect('/')
-
-@app.route('/')
-def index():
-    return flask.render_template('login/index.html')
-
-@app.route('/login', methods=['POST'])
-def login():
-    username = flask.request.form['username']
-    password = flask.request.form['password']
-    user = srp.find_first(Teacher, lambda x: x.username == username)
-
-    if not user:
-        return {'error': 'User not found'}, 404
-
-    if not user.check_password(password):
-        return {'error': 'Invalid password'}, 401
-
-    flask_login.login_user(user)
-    return {'message': 'Logged in'}, 200
 
 if __name__ == '__main__':
     app.run()

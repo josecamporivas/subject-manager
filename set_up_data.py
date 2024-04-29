@@ -1,5 +1,6 @@
 import sirope
 
+from models.Admin import Admin
 from models.Teacher import Teacher
 from models.Subject import Subject
 
@@ -30,6 +31,15 @@ def create_subjects():
     for subject in subjects:
         srp.save(subject)
 
+def create_admins():
+    admins = [
+        Admin('Administrator', 'admin', 'admin')
+    ]
+
+    for admin in admins:
+        srp.save(admin)
+
 if __name__ == '__main__':
     create_teachers()
     create_subjects()
+    create_admins()
