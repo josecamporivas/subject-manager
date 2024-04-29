@@ -30,9 +30,10 @@ def index():
 @teacher_bp.route('/', methods=['POST'])
 def create():
     data = json.loads(flask.request.data.decode('utf-8'))
-    full_name, username, password, subject = data.get('full_name'), data.get('username'), data.get('password'), data.get('subject')
-    valid_inputs = (check_empty_string(full_name) and check_empty_string(username)
-                    and check_empty_string(password)) and check_empty_string(subject)
+    full_name, username, password, subject = data.get('full_name'), data.get('username'), data.get(
+        'password'), data.get('subject')
+    valid_inputs = check_empty_string(full_name) and check_empty_string(username) \
+                   and check_empty_string(password) and check_empty_string(subject)
     if not valid_inputs:
         return {'message': 'Empty fields'}, 400
 
@@ -67,6 +68,7 @@ def update(username):
 
     return teacher_db.to_dict(), 200
 
+
 @teacher_bp.route('/<username>', methods=['DELETE'])
 def delete(username):
     teacher_db = srp.find_first(Teacher, lambda x: x.username == username)
@@ -78,35 +80,3 @@ def delete(username):
         return {'message': 'Error deleting teacher'}, 500
 
     return {'message': 'Teacher deleted'}, 200
-
-
-# @app.route('/saludo', methods=['POST'])
-# def saludo():
-#     # nombre = flask.request.form.get('name')
-#     email = flask.request.form.get('email', "").strip()
-#     password = flask.request.form.get('password', "").strip()
-#     mensaje = flask.request.form.get('mensaje')
-#
-#     # if not nombre:
-#     #     nombre = "Anónimo"
-#
-#     usr = User.find(srp, email)
-#
-#     if usr:
-#         if not usr.compara_password(password):
-#             flask.flash("usuario no reconocido")
-#             return flask.redirect('/')
-#     else:
-#         usr = User(email, password)
-#         srp.save(usr)
-#
-#     flask_login.login_user(usr)
-#
-#     if not mensaje:
-#         mensaje = "Mensaje vacío"
-#
-#     data = Mensaje(usr.email, mensaje)
-#     srp.save(data)
-#
-#     flask_login.logout_user()
-#     return flask.redirect('/')
