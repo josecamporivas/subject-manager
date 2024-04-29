@@ -17,8 +17,6 @@ srp = Sirope()
 @teacher_bp.route('/')
 @flask_login.login_required
 def index():
-    get_current_user()
-
     data = {
         'teachers': list(srp.load_all(Teacher)),
         'subjects': list(srp.load_all(Subject))
