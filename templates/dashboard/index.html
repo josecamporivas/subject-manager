@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard</title>
+    <style>
+        #log-out-button{
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #fd2d2d;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 5px;
+            background-color: #fd2d2d;
+            color: white;
+        }
+
+        #header-dashboard{
+            margin-top: 35px;
+            text-align: center;
+        }
+
+        #list-links{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            row-gap: 5px;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #list-links > li{
+            padding: 0;
+            background-color: #c2c2c2;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #list-links > li:hover{
+            background-color: #a2a2a2;
+        }
+
+        #list-links > li > a{
+            text-decoration: none;
+            color: black;
+            display: inline-block;
+            padding: 15px 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <button id="log-out-button">Log out</button>
+    <header id="header-dashboard">
+        <h1>Welcome to the dashboard</h1>
+        <h4>You can manage the following models</h4>
+    </header>
+    <ul id="list-links">
+        <li><a href="/teachers">Teachers</a></li>
+        <li><a href="/subjects">Subjects</a></li>
+        <li><a href="/students">Students</a></li>
+    </ul>
+
+    <script>
+        const $ = (selector) => document.querySelector(selector);
+
+        $('#log-out-button').addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const response = await fetch('/logout', {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                console.error('Error logging out');
+                return
+            }
+
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

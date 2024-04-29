@@ -53,3 +53,8 @@ def register():
     srp.save(user)
 
     return user.to_dict(), 201
+
+@root_bp.route('/dashboard')
+@flask_login.login_required
+def dashboard():
+    return flask.render_template('dashboard/index.html')
