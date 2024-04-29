@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Log in</title>
+    <title>Register</title>
     <style>
         h1 {
             text-align: center;
@@ -17,12 +17,12 @@
             align-items: center;
         }
 
-         #link-login {
+        #link-login {
             display: block;
             text-align: center;
         }
 
-         #message {
+        #message {
             text-align: center;
             display: none;
             padding: 10px;
@@ -33,33 +33,35 @@
     </style>
 </head>
 <body>
-    <h1>Log in</h1>
-    <form id="form-login">
+    <h1>Register</h1>
+    <form id="form-register">
+        <label for="full_name">Full name</label>
+        <input type="text" name="full_name" id="full_name" required>
         <label for="username">Username</label>
         <input type="text" name="username" id="username" required>
         <label for="password">Password</label>
         <input type="password" name="password" id="password" required>
-        <button type="submit">Log in</button>
+        <button type="submit">Register</button>
     </form>
-    <p id="link-login">Already have an account? <a href="/register">Register</a></p>
+    <p id="link-login">Already have an account? <a href="/">Log in</a></p>
     <p id="message"></p>
     <script>
         const message = document.getElementById('message');
-        document.getElementById('form-login').addEventListener('submit', async function (event) {
+        document.getElementById('form-register').addEventListener('submit', async function (event) {
             event.preventDefault();
             const formData = new FormData(event.target);
-            const result = await fetch('/login', {
-                                        method: 'POST',
-                                        body: formData
-                                    })
-            if(!result.ok){
+            const result = await fetch('/register', {
+                method: 'POST',
+                body: formData
+            })
+            if (!result.ok) {
                 const data = await result.json();
                 showMessage(`Error: ${data.message}`, true);
                 return
             }
-            window.location.href = '/teachers';
-        });
+            showMessage('User registered successfully', false);
 
+        });
         function showMessage(messageText, isError){
             message.style.display = 'block';
             message.style.color = isError ? 'red' : '#01b604';
