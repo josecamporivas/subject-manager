@@ -7,6 +7,20 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Teacher manager</title>
     <style>
+        #log-out-button{
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #fd2d2d;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 5px;
+            background-color: #fd2d2d;
+            color: white;
+        }
+
         #header-style {
             text-align: center;
             margin-bottom: 10px;
@@ -83,6 +97,9 @@
     </style>
 </head>
 <body>
+    <button id="log-out-button">
+        Log out
+    </button>
     <header id="header-style">
         <h1>TEACHER MANAGER</h1>
         <button id="button-create-teacher">
@@ -173,6 +190,21 @@
         const dialogEditTeacher = $('#dialog-edit-teacher');
         const formEditTeacher = $('#form-edit-teacher');
         const errorMessageEditTeacher = $('#error-message-edit-teacher');
+
+        $('#log-out-button').addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const response = await fetch('/logout', {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                console.error('Error logging out');
+                return
+            }
+
+            window.location.href = '/';
+        });
 
         $('#button-create-teacher').addEventListener('click', () => {
             dialogCreateTeacher.showModal();
