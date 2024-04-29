@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Student manager</title>
+    <style>
+        #log-out-button{
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #fd2d2d;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 5px;
+            background-color: #fd2d2d;
+            color: white;
+        }
+
+        #header-style {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #img-create-button {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+        }
+
+        .main_content {
+            width: 83ch;
+            margin: 0 auto;
+        }
+
+        table {
+            border: 1px solid #dededf;
+            height: 100%;
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            border-spacing: 1px;
+            text-align: center;
+        }
+
+        th {
+            border: 1px solid #dededf;
+            background-color: #eceff1;
+            color: #000000;
+            padding: 5px;
+        }
+
+        td {
+            border: 1px solid #dededf;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 5px;
+        }
+
+        .actions-cell{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            column-gap: 8px;
+        }
+
+        #dialog-create-student{
+            width: 300px;
+            border-radius: 10px;
+        }
+
+        #dialog-create-student::backdrop{
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        #form-create-student, #form-edit-student {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            row-gap: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <button id="log-out-button">Log out</button>
+    <header id="header-style">
+        <h1>STUDENT MANAGER</h1>
+        <button id="button-create-student">
+            <img src="/static/plus-icon.svg" alt="Button to create a student" id="img-create-button"/>
+        </button>
+    </header>
+    <main class="main_content">
+        <table id="table-student">
+            <thead>
+                <tr>
+                    <th>Full name</th>
+                    <th>Username</th>
+                    <th>Subjects</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.full_name }}</td>
+                        <td>{{ student.username }}</td>
+                        <td>
+                            {% for subject in student.subjects %}
+                                <ul>
+                                    <li>{{ subject }}</li>
+                                </ul>
+                            {% endfor %}
+                        </td>
+                        <td class="actions-cell">
+                            <form class="form-edit-student" >
+                                <button>Edit</button>
+                            </form>
+                            <form class="form-delete-student">
+                                <input type="hidden" name="username" value="{{ student.username }}">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <dialog id="dialog-create-student">
+            <form id="form-create-student">
+                <label for="full_name">Full name</label>
+                <input type="text" id="full_name" name="full_name" required>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <label for="subject">Subject</label>
+                <select id="subject" name="subject" required style="text-align: center" multiple>
+                     <option value="" selected disabled hidden>Choose one</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.name }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Edit</button>
+                <button type="button" id="button-close-create-student">Cancel</button>
+                <p id="error-message-create-student">Error: <span id="error-create-student"></span></p>
+            </form>
+        </dialog>
+    </main>
+
+    <script>
+        const $ = (selector) => document.querySelector(selector);
+        const $$ = (selector) => document.querySelectorAll(selector);
+
+        $('#log-out-button').addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const response = await fetch('/logout', {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                console.error('Error logging out');
+                return
+            }
+
+            window.location.href = '/';
+        });
+
+        $('#button-create-student').addEventListener('click', (e) => {
+            $('#dialog-create-student').showModal();
+        });
+
+        $('#button-close-create-student').addEventListener('click', (e) => {
+            $('#dialog-create-student').close();
+        });
+    </script>
+</body>
+</html>

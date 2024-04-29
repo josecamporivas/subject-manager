@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from os import getenv
 
 from blueprints.root_bp import root_bp
+from blueprints.student_bp import student_bp
 from blueprints.subject_bp import subject_bp
 from blueprints.teacher_bp import teacher_bp
 from models.Admin import Admin
@@ -24,6 +25,7 @@ app, srp, lm = create_app()
 app.register_blueprint(root_bp)
 app.register_blueprint(teacher_bp)
 app.register_blueprint(subject_bp)
+app.register_blueprint(student_bp)
 
 @lm.user_loader
 def load_user(id: str):
