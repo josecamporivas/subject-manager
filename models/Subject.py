@@ -13,6 +13,10 @@ class Subject(flask_login.UserMixin):
     def classroom(self):
         return self.__classroom
 
+    @classroom.setter
+    def classroom(self, classroom):
+        self.__classroom = classroom
+
     def to_dict(self):
         return {
             'name': self.name,

@@ -7,7 +7,6 @@ from models.Subject import Subject
 from models.Teacher import Teacher
 import json
 
-from utils.auth import get_current_user
 from utils.input_validators import check_empty_string
 
 teacher_bp = Blueprint('teacher_bp', __name__, url_prefix='/teachers', template_folder='templates')
@@ -37,7 +36,7 @@ def create():
 
     exists = srp.find_first(Teacher, lambda x: x.username == username)
     if exists:
-        return {'message': 'Teacher already exists'}, 409
+        return {'message': 'Teacher username already exists'}, 409
 
     teacher = Teacher(**data)
     srp.save(teacher)

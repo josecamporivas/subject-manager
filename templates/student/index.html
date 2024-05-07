@@ -7,86 +7,110 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Student manager</title>
     <style>
-        #log-out-button{
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-            border: 1px solid #fd2d2d;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 5px;
+    #log-out-button{
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        border: 1px solid #fd2d2d;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 5px;
+        background-color: #fd2d2d;
+        color: white;
+    }
+
+    #header-style {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    #img-create-button {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+    }
+
+    .main_content {
+        width: 83ch;
+        margin: 0 auto;
+    }
+
+    table {
+        border: 1px solid #dededf;
+        height: 100%;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border-spacing: 1px;
+        text-align: center;
+    }
+
+    th {
+        border: 1px solid #dededf;
+        background-color: #eceff1;
+        color: #000000;
+        padding: 5px;
+    }
+
+    td {
+        border: 1px solid #dededf;
+        background-color: #ffffff;
+        color: #000000;
+        padding: 5px;
+    }
+
+     .student-list-subject{
+         list-style-type: none;
+         padding: 0;
+         display: flex;
+         flex-direction: column;
+        row-gap: 5px;
+    }
+
+    .student-list-subject > li{
+        padding: 5px;
+        background-color: rgba(0, 136, 183, 0.34);
+        border-radius: 5px;
+    }
+
+    .actions-cell{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+        column-gap: 8px;
+    }
+
+    #dialog-create-student{
+        width: 300px;
+        border-radius: 10px;
+    }
+
+    #dialog-create-student::backdrop{
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    #form-create-student, #form-edit-student {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        row-gap: 10px;
+    }
+
+    #error-message-create-student, #error-message-edit-student{
+            display: none;
             background-color: #fd2d2d;
             color: white;
-        }
-
-        #header-style {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        #img-create-button {
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-        }
-
-        .main_content {
-            width: 83ch;
-            margin: 0 auto;
-        }
-
-        table {
-            border: 1px solid #dededf;
-            height: 100%;
-            width: 100%;
-            table-layout: fixed;
-            border-collapse: collapse;
-            border-spacing: 1px;
-            text-align: center;
-        }
-
-        th {
-            border: 1px solid #dededf;
-            background-color: #eceff1;
-            color: #000000;
             padding: 5px;
-        }
+            border-radius: 5px;
+            font-weight: bold;
+    }
 
-        td {
-            border: 1px solid #dededf;
-            background-color: #ffffff;
-            color: #000000;
-            padding: 5px;
-        }
+</style>
 
-        .actions-cell{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: row;
-            column-gap: 8px;
-        }
-
-        #dialog-create-student{
-            width: 300px;
-            border-radius: 10px;
-        }
-
-        #dialog-create-student::backdrop{
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        #form-create-student, #form-edit-student {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            row-gap: 10px;
-        }
-
-    </style>
 </head>
 <body>
     <button id="log-out-button">Log out</button>
@@ -112,14 +136,14 @@
                         <td>{{ student.full_name }}</td>
                         <td>{{ student.username }}</td>
                         <td>
+                            <ul class="student-list-subject">
                             {% for subject in student.subjects %}
-                                <ul>
                                     <li>{{ subject }}</li>
-                                </ul>
                             {% endfor %}
+                            </ul>
                         </td>
                         <td class="actions-cell">
-                            <form class="form-edit-student" >
+                            <form class="form-edit-student">
                                 <button>Edit</button>
                             </form>
                             <form class="form-delete-student">
@@ -140,8 +164,8 @@
                 <input type="text" id="username" name="username" required>
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
-                <label for="subject">Subject</label>
-                <select id="subject" name="subject" required style="text-align: center" multiple>
+                <label for="subjects">Subjects</label>
+                <select id="subjects" name="subjects" required style="text-align: center" multiple>
                      <option value="" selected disabled hidden>Choose one</option>
                     {% for subject in subjects %}
                         <option value="{{ subject.name }}">{{ subject.name }}</option>
@@ -152,11 +176,37 @@
                 <p id="error-message-create-student">Error: <span id="error-create-student"></span></p>
             </form>
         </dialog>
+
+        <dialog id="dialog-edit-student">
+            <form id="form-edit-student">
+                <label for="full_name_edit">Full name</label>
+                <input type="text" id="full_name_edit" name="full_name" required>
+                <label for="username_edit">Username</label>
+                <input type="text" id="username_edit" name="username" required readonly>
+                <label for="password_edit">Password</label>
+                <input type="password" id="password_edit" name="password">
+                <label for="subject_edit">Subject</label>
+                <select id="subject_edit" name="subjects" required style="text-align: center" multiple>
+                     <option value="" selected disabled hidden>Choose one</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.name }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Edit</button>
+                <button type="button" id="button-close-edit-student">Cancel</button>
+                <p id="error-message-edit-student">Error: <span id="error-edit-student"></span></p>
+            </form>
+        </dialog>
     </main>
 
     <script>
         const $ = (selector) => document.querySelector(selector);
         const $$ = (selector) => document.querySelectorAll(selector);
+
+        const dialogEditStudent = $('#dialog-edit-student');
+        const formEditStudent = $('#form-edit-student');
+
+        const messageEditStudent = $('#error-message-edit-student');
 
         $('#log-out-button').addEventListener('click', async (e) => {
             e.preventDefault();
@@ -180,6 +230,149 @@
         $('#button-close-create-student').addEventListener('click', (e) => {
             $('#dialog-create-student').close();
         });
+
+        $('#button-close-edit-student').addEventListener('click', (e) => {
+            dialogEditStudent.close();
+        });
+
+        Array.from($$('.form-edit-student')).forEach(form => {
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const rowTeacher = event.target.parentElement.parentElement;
+                const full_name = rowTeacher.children[0].textContent;
+                const username = rowTeacher.children[1].textContent;
+                const subjects = Array.from(rowTeacher.children[2].children[0].children).map(li => li.textContent);
+                console.log({full_name, username, subjects});
+
+                formEditStudent.children.full_name_edit.value = full_name;
+                formEditStudent.children.username_edit.value = username;
+                Array.from(formEditStudent.children.subject_edit.options).forEach(option => {
+                    if(subjects.includes(option.value)) {
+                        option.selected = true;
+                    }else{
+                        option.selected = false;
+                    }
+                });
+                dialogEditStudent.showModal();
+            })
+        });
+
+
+        Array.from($$('.form-delete-student')).forEach(form => {
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const username = event.target.username.value;
+
+                const response = await fetch(`/students/${username}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    console.error('Error deleting teacher');
+                    //TODO: Show error message
+                    return
+                }
+
+                const row = event.target.parentElement.parentElement;
+                row.remove();
+            });
+        });
+
+        $('#form-create-student').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target).entries());
+            const subjects = Array.from($('#subjects').selectedOptions).map(option => option.value).filter(value => value !== '');
+            data.subjects = subjects;
+            console.log(data);
+
+            const response = await fetch('/students', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (!response.ok) {
+                $('#error-create-student').textContent = result.message;
+                $('#error-message-create-student').style.display = 'block';
+                return;
+            }
+
+            addRowToTable(data);
+        });
+
+        formEditStudent.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            messageEditStudent.style.display = 'none';
+
+            const data = Object.fromEntries(new FormData(event.target).entries())
+            const subjects = Array.from($('#subject_edit').selectedOptions).map(option => option.value).filter(value => value !== '');
+            data.subjects = subjects;
+
+            const response = await fetch(`/students/${data.username}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (!response.ok) {
+                $('#error-edit-student').textContent = result.message;
+                messageEditStudent.style.display = 'block';
+                return;
+            }
+
+            updateRowInTable(result);
+        })
+
+        function addRowToTable(studentInfo) {   //TODO: Add buttons to row
+            const row = $('#table-student').insertRow(-1);
+            const fullNameCell = row.insertCell(0);
+            const usernameCell = row.insertCell(1);
+            const subjectsCell = row.insertCell(2);
+            const actionsCell = row.insertCell(3);
+            actionsCell.classList.add('actions-cell');
+
+            //TODO: Add event listeners to forms. its better to create elements with javascript
+            actionsCell.innerHTML = `
+                            <form class="form-edit-teacher" >
+                                <button>Edit</button>
+                            </form>
+                            <form class="form-delete-teacher">
+                                <input type="hidden" name="username" value="${studentInfo.username}">
+                                <button type="submit">Delete</button>
+                            </form>`
+
+            fullNameCell.textContent = studentInfo.full_name;
+            usernameCell.textContent = studentInfo.username;
+            subjectsCell.appendChild(createListOfSubjects(studentInfo.subjects));
+        }
+
+        function createListOfSubjects(subjects) {
+            const ul = document.createElement('ul');
+            ul.classList.add('student-list-subject');
+            subjects.forEach(subject => {
+                const li = document.createElement('li');
+                li.textContent = subject;
+                ul.appendChild(li);
+            });
+            return ul;
+        }
+
+        function updateRowInTable(studentInfo) {
+            Array.from($('#table-student').rows).forEach(row => {
+               if(row.cells[1].textContent === studentInfo.username){
+                     row.cells[0].textContent = studentInfo.full_name;
+                     row.cells[2].innerHTML = '';
+                     row.cells[2].appendChild(createListOfSubjects(studentInfo.subjects));
+               }
+            });
+        }
     </script>
 </body>
 </html>

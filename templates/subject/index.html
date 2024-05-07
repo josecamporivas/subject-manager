@@ -68,6 +68,14 @@
             width: 50px;
             height: 50px;
         }
+
+        #form-create-subject, #form-edit-subject{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            row-gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -95,9 +103,11 @@
                         <td>{{ subject.name }}</td>
                         <td>{{ subject.classroom }}</td>
                         <td class="actions-cell">
-                            <button>Edit</button>
+                            <form class="form-edit-subject">
+                                <button>Edit</button>
+                            </form>
                             <form class="form-delete-subject">
-                                <input type="hidden" name="name" value="{{ subject.name }}">
+                                <input type="hidden" name="subjectName" value="{{ subject.name }}">
                                 <button type="submit">Delete</button>
                             </form>
                         </td>
@@ -113,6 +123,18 @@
                 <input type="text" id="classroom" name="classroom">
                 <button type="submit">Create</button>
                 <button type="button" id="button-close-create-subject">Cancel</button>
+                <!-- TODO: add error message -->
+            </form>
+        </dialog>
+        <dialog id="dialog-edit-subject">
+            <form id="form-edit-subject">
+                <label for="name_edit">Name</label>
+                <input type="text" id="name_edit" name="name" readonly>
+                <label for="classroom_edit">Classroom</label>
+                <input type="text" id="classroom_edit" name="classroom">
+                <button type="submit">Edit</button>
+                <button type="button" id="button-close-edit-subject">Cancel</button>
+                <!-- TODO: add error message -->
             </form>
         </dialog>
     </main>
@@ -123,7 +145,10 @@
         const dialogCreateSubject = $('#dialog-create-subject');
         const formCreateSubject = $('#form-create-subject');
 
-        const tableTeachers = $('table-subjects');
+        const dialogEditSubject = $('#dialog-edit-subject');
+        const formEditSubject = $('#form-edit-subject');
+
+        const tableSubjects = $('#table-subjects');
 
         $('#log-out-button').addEventListener('click', async (e) => {
             e.preventDefault();
@@ -146,6 +171,10 @@
 
         $('#button-close-create-subject').addEventListener('click', () => {
             dialogCreateSubject.close();
+        });
+
+        $('#button-close-edit-subject').addEventListener('click', () => {
+            dialogEditSubject.close();
         });
 
         formCreateSubject.addEventListener('submit', async (event) => {
@@ -173,20 +202,75 @@
             formCreateSubject.reset();
         });
 
+        Array.from($$('.form-edit-subject')).forEach(form => {
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const rowSubject = event.target.parentElement.parentElement;
+                const name = rowSubject.children[0].textContent;
+                const classroom = rowSubject.children[1].textContent;
+                formEditSubject.children.name_edit.value = name;
+                formEditSubject.children.classroom_edit.value = classroom;
+
+                dialogEditSubject.showModal();
+                console.log({name, classroom});
+            });
+        });
+
         Array.from($$('.form-delete-subject')).forEach(form => {
             form.addEventListener("submit", async (event) => {
                 event.preventDefault();
-                //TODO: Implement delete subject
+                const subjectName = event.target.subjectName.value;
+
+                const response = await fetch(`/subjects/${subjectName}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    console.error('Error deleting subject');
+                    //TODO: Show error message
+                    return
+                }
+
+                const row = event.target.parentElement.parentElement;
+                row.remove();
             });
         })
 
+        formEditSubject.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const data = Object.fromEntries(new FormData(event.target));
+
+            const response = await fetch(`/subjects/${data.name}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                console.error('Error editing subject');
+                //TODO: handle error
+                return
+            }
+
+            updateRowToTable(result);
+            dialogEditSubject.close();
+            formEditSubject.reset();
+        })
+
         function addRowToTable(subjectInfo) {   //TODO: add buttons to row
-            const row = tableTeachers.insertRow(-1);
+            const row = tableSubjects.insertRow(-1);
             const nameCell = row.insertCell(0);
             const classroomCell = row.insertCell(1);
 
             nameCell.textContent = subjectInfo.name;
             classroomCell.textContent = subjectInfo.classroom;
+        }
+
+        function updateRowToTable(subjectInfo){
+            const row = Array.from(tableSubjects.rows).find(row => row.cells[0].textContent === subjectInfo.name);
+            row.cells[1].textContent = subjectInfo.classroom;
         }
     </script>
 </body>
