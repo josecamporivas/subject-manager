@@ -224,7 +224,6 @@
             errorMessageCreateTeacher.style.display = 'none';
 
             const formData = new FormData(event.target);
-            console.log(Object.fromEntries(formData));
 
             const response = await fetch('/teachers/', {
                 method: 'POST',
@@ -284,10 +283,8 @@
             const subject = rowTeacher.children[2].textContent;
             formEditTeacher.children.full_name_edit.value = full_name;
             formEditTeacher.children.username_edit.value = username;
-            console.log(formEditTeacher.children.subject_edit)
             formEditTeacher.children.subject_edit.value = subject;
             dialogEditTeacher.showModal();
-            console.log({full_name, username, subject});
         }
 
         Array.from($$('.form-edit-teacher')).forEach(form => {

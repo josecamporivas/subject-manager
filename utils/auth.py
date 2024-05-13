@@ -6,7 +6,6 @@ def get_current_user():
 
     if usr.is_anonymous:
         flask_login.logout_user()
-        print('User is anonymous')
         usr = None
 
     return usr

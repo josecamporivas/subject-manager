@@ -28,7 +28,7 @@ def get_students():
 def create_student():
     data = json.loads(flask.request.data.decode('utf-8'))
     full_name, username, password, subjects = data.get('full_name'), data.get('username'), data.get('password'), data.get('subjects')
-    print(full_name, username, password, subjects)
+
     valid_inputs = check_empty_string(full_name) and check_empty_string(username) and check_empty_string(password) \
                    and check_empty_list(subjects)
 

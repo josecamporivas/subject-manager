@@ -29,12 +29,10 @@ app.register_blueprint(student_bp)
 
 @lm.user_loader
 def load_user(id: str):
-    print(f'Loading user {id}')
     return srp.find_first(Admin, lambda x: x.username == id)
 
 @lm.unauthorized_handler
 def unauthorized():
-    print('Unauthorized')
     flask.flash("Unauthorized")
     return flask.redirect('/')
 

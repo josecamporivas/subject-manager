@@ -241,7 +241,6 @@
             const full_name = rowTeacher.children[0].textContent;
             const username = rowTeacher.children[1].textContent;
             const subjects = Array.from(rowTeacher.children[2].children[0].children).map(li => li.textContent);
-            console.log({full_name, username, subjects});
 
             formEditStudent.children.full_name_edit.value = full_name;
             formEditStudent.children.username_edit.value = username;
