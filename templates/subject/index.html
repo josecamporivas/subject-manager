@@ -202,38 +202,42 @@
             formCreateSubject.reset();
         });
 
-        Array.from($$('.form-edit-subject')).forEach(form => {
-            form.addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const rowSubject = event.target.parentElement.parentElement;
-                const name = rowSubject.children[0].textContent;
-                const classroom = rowSubject.children[1].textContent;
-                formEditSubject.children.name_edit.value = name;
-                formEditSubject.children.classroom_edit.value = classroom;
+        const handleEditSubject = async (event) => {
+            event.preventDefault();
+            const rowSubject = event.target.parentElement.parentElement;
+            const name = rowSubject.children[0].textContent;
+            const classroom = rowSubject.children[1].textContent;
+            formEditSubject.children.name_edit.value = name;
+            formEditSubject.children.classroom_edit.value = classroom;
 
-                dialogEditSubject.showModal();
-                console.log({name, classroom});
-            });
+            dialogEditSubject.showModal();
+            console.log({name, classroom});
+        }
+
+        Array.from($$('.form-edit-subject')).forEach(form => {
+            form.addEventListener("submit", handleEditSubject);
         });
 
-        Array.from($$('.form-delete-subject')).forEach(form => {
-            form.addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const subjectName = event.target.subjectName.value;
+        const handleDeleteSubject = async (event) => {
+            event.preventDefault();
+            const subjectName = event.target.subjectName.value;
 
-                const response = await fetch(`/subjects/${subjectName}`, {
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) {
-                    console.error('Error deleting subject');
-                    //TODO: Show error message
-                    return
-                }
-
-                const row = event.target.parentElement.parentElement;
-                row.remove();
+            const response = await fetch(`/subjects/${subjectName}`, {
+                method: 'DELETE'
             });
+
+            if (!response.ok) {
+                console.error('Error deleting subject');
+                //TODO: Show error message
+                return
+            }
+
+            const row = event.target.parentElement.parentElement;
+            row.remove();
+        }
+
+        Array.from($$('.form-delete-subject')).forEach(form => {
+            form.addEventListener("submit", handleDeleteSubject);
         })
 
         formEditSubject.addEventListener("submit", async (event) => {
@@ -266,6 +270,24 @@
 
             nameCell.textContent = subjectInfo.name;
             classroomCell.textContent = subjectInfo.classroom;
+
+            const actionsCell = row.insertCell(2);
+            actionsCell.className = 'actions-cell';
+            const formEdit = document.createElement('form');
+            formEdit.className = 'form-edit-subject';
+            formEdit.addEventListener('submit', handleEditSubject);
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            formEdit.appendChild(editButton);
+            actionsCell.appendChild(formEdit);
+
+            const formDelete = document.createElement('form');
+            formDelete.className = 'form-delete-subject';
+            formDelete.addEventListener('submit', handleDeleteSubject);
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            formDelete.appendChild(deleteButton);
+            actionsCell.appendChild(formDelete);
         }
 
         function updateRowToTable(subjectInfo){

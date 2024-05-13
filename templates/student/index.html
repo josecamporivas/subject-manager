@@ -235,47 +235,50 @@
             dialogEditStudent.close();
         });
 
-        Array.from($$('.form-edit-student')).forEach(form => {
-            form.addEventListener('submit', async (event) => {
-                event.preventDefault();
-                const rowTeacher = event.target.parentElement.parentElement;
-                const full_name = rowTeacher.children[0].textContent;
-                const username = rowTeacher.children[1].textContent;
-                const subjects = Array.from(rowTeacher.children[2].children[0].children).map(li => li.textContent);
-                console.log({full_name, username, subjects});
+        const handleEditStudent = async (event) => {
+            event.preventDefault();
+            const rowTeacher = event.target.parentElement.parentElement;
+            const full_name = rowTeacher.children[0].textContent;
+            const username = rowTeacher.children[1].textContent;
+            const subjects = Array.from(rowTeacher.children[2].children[0].children).map(li => li.textContent);
+            console.log({full_name, username, subjects});
 
-                formEditStudent.children.full_name_edit.value = full_name;
-                formEditStudent.children.username_edit.value = username;
-                Array.from(formEditStudent.children.subject_edit.options).forEach(option => {
-                    if(subjects.includes(option.value)) {
-                        option.selected = true;
-                    }else{
-                        option.selected = false;
-                    }
-                });
-                dialogEditStudent.showModal();
-            })
+            formEditStudent.children.full_name_edit.value = full_name;
+            formEditStudent.children.username_edit.value = username;
+            Array.from(formEditStudent.children.subject_edit.options).forEach(option => {
+                if(subjects.includes(option.value)) {
+                    option.selected = true;
+                }else{
+                    option.selected = false;
+                }
+            });
+            dialogEditStudent.showModal();
+        };
+
+        Array.from($$('.form-edit-student')).forEach(form => {
+            form.addEventListener('submit', handleEditStudent);
         });
 
+        const handleDeleteStudent = async (event) => {
+            event.preventDefault();
+            const username = event.target.username.value;
+
+            const response = await fetch(`/students/${username}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                console.error('Error deleting teacher');
+                //TODO: Show error message
+                return
+            }
+
+            const row = event.target.parentElement.parentElement;
+            row.remove();
+        };
 
         Array.from($$('.form-delete-student')).forEach(form => {
-            form.addEventListener('submit', async (event) => {
-                event.preventDefault();
-                const username = event.target.username.value;
-
-                const response = await fetch(`/students/${username}`, {
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) {
-                    console.error('Error deleting teacher');
-                    //TODO: Show error message
-                    return
-                }
-
-                const row = event.target.parentElement.parentElement;
-                row.remove();
-            });
+            form.addEventListener('submit', handleDeleteStudent);
         });
 
         $('#form-create-student').addEventListener('submit', async (e) => {
@@ -301,6 +304,7 @@
             }
 
             addRowToTable(data);
+            $('#dialog-create-student').close();
         });
 
         formEditStudent.addEventListener('submit', async (event) => {
@@ -328,6 +332,7 @@
             }
 
             updateRowInTable(result);
+            dialogEditStudent.close();
         })
 
         function addRowToTable(studentInfo) {   //TODO: Add buttons to row
@@ -338,15 +343,40 @@
             const actionsCell = row.insertCell(3);
             actionsCell.classList.add('actions-cell');
 
+            const formEditStudent = document.createElement('form');
+            formEditStudent.classList.add('form-edit-student');
+            formEditStudent.addEventListener('submit', handleEditStudent);
+            const buttonEdit = document.createElement('button');
+            buttonEdit.textContent = 'Edit';
+            formEditStudent.appendChild(buttonEdit);
+            actionsCell.appendChild(formEditStudent);
+
+            const formDeleteStudent = document.createElement('form');
+            formDeleteStudent.classList.add('form-delete-student');
+            formDeleteStudent.addEventListener('submit', handleDeleteStudent);
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'username';
+            input.value = studentInfo.username;
+
+            formDeleteStudent.appendChild(input);
+
+            const buttonDelete = document.createElement('button');
+            buttonDelete.type = 'submit';
+            buttonDelete.textContent = 'Delete';
+            formDeleteStudent.appendChild(buttonDelete);
+
+            actionsCell.appendChild(formDeleteStudent);
+
             //TODO: Add event listeners to forms. its better to create elements with javascript
-            actionsCell.innerHTML = `
-                            <form class="form-edit-teacher" >
-                                <button>Edit</button>
-                            </form>
-                            <form class="form-delete-teacher">
-                                <input type="hidden" name="username" value="${studentInfo.username}">
-                                <button type="submit">Delete</button>
-                            </form>`
+            // actionsCell.innerHTML = `
+            //                 <form class="form-edit-student" >
+            //                     <button>Edit</button>
+            //                 </form>
+            //                 <form class="form-delete-student">
+            //                     <input type="hidden" name="username" value="${studentInfo.username}">
+            //                     <button type="submit">Delete</button>
+            //                 </form>`
 
             fullNameCell.textContent = studentInfo.full_name;
             usernameCell.textContent = studentInfo.username;

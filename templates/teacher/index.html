@@ -278,40 +278,44 @@
             formEditTeacher.reset();
         });
 
+        const handleEditTeacher = async (event) => {
+            event.preventDefault();
+            const rowTeacher = event.target.parentElement.parentElement;
+            const full_name = rowTeacher.children[0].textContent;
+            const username = rowTeacher.children[1].textContent;
+            const subject = rowTeacher.children[2].textContent;
+            formEditTeacher.children.full_name_edit.value = full_name;
+            formEditTeacher.children.username_edit.value = username;
+            console.log(formEditTeacher.children.subject_edit)
+            formEditTeacher.children.subject_edit.value = subject;
+            dialogEditTeacher.showModal();
+            console.log({full_name, username, subject});
+        }
+
         Array.from($$('.form-edit-teacher')).forEach(form => {
-            form.addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const rowTeacher = event.target.parentElement.parentElement;
-                const full_name = rowTeacher.children[0].textContent;
-                const username = rowTeacher.children[1].textContent;
-                const subject = rowTeacher.children[2].textContent;
-                formEditTeacher.children.full_name_edit.value = full_name;
-                formEditTeacher.children.username_edit.value = username;
-                console.log(formEditTeacher.children.subject_edit)
-                formEditTeacher.children.subject_edit.value = subject;
-                dialogEditTeacher.showModal();
-                console.log({full_name, username, subject});
-            });
+            form.addEventListener("submit", handleEditTeacher);
         });
 
-        Array.from($$('.form-delete-teacher')).forEach(form => {
-            form.addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const username = event.target.username.value;
+        const handleDeleteTeacher =  async (event) => {
+            event.preventDefault();
+            const username = event.target.username.value;
 
-                const response = await fetch(`/teachers/${username}`, {
-                    method: 'DELETE'
-                });
-
-                if (!response.ok) {
-                    console.error('Error deleting teacher');
-                    //TODO: Show error message
-                    return
-                }
-
-                const row = event.target.parentElement.parentElement;
-                row.remove();
+            const response = await fetch(`/teachers/${username}`, {
+                method: 'DELETE'
             });
+
+            if (!response.ok) {
+                console.error('Error deleting teacher');
+                //TODO: Show error message
+                return
+            }
+
+            const row = event.target.parentElement.parentElement;
+            row.remove();
+        }
+
+        Array.from($$('.form-delete-teacher')).forEach(form => {
+            form.addEventListener("submit", handleDeleteTeacher);
         })
 
         function addRowToTable(teacherInfo) {   //TODO: Add buttons to row
@@ -322,15 +326,18 @@
             const actionsCell = row.insertCell(3);
             actionsCell.classList.add('actions-cell');
 
-            //TODO: Add event listeners to forms. its better to create elements with javascript
-            actionsCell.innerHTML = `
-                            <form class="form-edit-teacher" >
-                                <button>Edit</button>
-                            </form>
-                            <form class="form-delete-teacher">
-                                <input type="hidden" name="username" value="${teacherInfo.username}">
-                                <button type="submit">Delete</button>
-                            </form>`
+            const formEditTeacher = document.createElement('form');
+            formEditTeacher.classList.add('form-edit-teacher');
+            formEditTeacher.innerHTML = `<button>Edit</button>`;
+            formEditTeacher.addEventListener('submit', handleEditTeacher);
+            actionsCell.appendChild(formEditTeacher);
+
+            const formDeleteTeacher = document.createElement('form');
+            formDeleteTeacher.classList.add('form-delete-teacher');
+            formDeleteTeacher.innerHTML = `<input type="hidden" name="username" value="${teacherInfo.username}">
+                                            <button type="submit">Delete</button>`;
+            formDeleteTeacher.addEventListener('submit', handleDeleteTeacher);
+            actionsCell.appendChild(formDeleteTeacher);
 
             fullNameCell.textContent = teacherInfo.full_name;
             usernameCell.textContent = teacherInfo.username;
