@@ -13,11 +13,11 @@
         top: 10px;
         cursor: pointer;
         border-radius: 5px;
-        border: 1px solid #fd2d2d;
+        border: 1px solid #383838;
         font-size: 16px;
         font-weight: bold;
         padding: 5px;
-        background-color: #fd2d2d;
+        background-color: rgba(35, 35, 35, 0.93);
         color: white;
     }
 
@@ -269,7 +269,6 @@
 
             if (!response.ok) {
                 console.error('Error deleting teacher');
-                //TODO: Show error message
                 return
             }
 
@@ -286,7 +285,6 @@
             const data = Object.fromEntries(new FormData(e.target).entries());
             const subjects = Array.from($('#subjects').selectedOptions).map(option => option.value).filter(value => value !== '');
             data.subjects = subjects;
-            console.log(data);
 
             const response = await fetch('/students', {
                 method: 'POST',
@@ -367,16 +365,6 @@
             formDeleteStudent.appendChild(buttonDelete);
 
             actionsCell.appendChild(formDeleteStudent);
-
-            //TODO: Add event listeners to forms. its better to create elements with javascript
-            // actionsCell.innerHTML = `
-            //                 <form class="form-edit-student" >
-            //                     <button>Edit</button>
-            //                 </form>
-            //                 <form class="form-delete-student">
-            //                     <input type="hidden" name="username" value="${studentInfo.username}">
-            //                     <button type="submit">Delete</button>
-            //                 </form>`
 
             fullNameCell.textContent = studentInfo.full_name;
             usernameCell.textContent = studentInfo.username;

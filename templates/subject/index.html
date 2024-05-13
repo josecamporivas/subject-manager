@@ -13,11 +13,11 @@
             top: 10px;
             cursor: pointer;
             border-radius: 5px;
-            border: 1px solid #fd2d2d;
+            border: 1px solid #383838;
             font-size: 16px;
             font-weight: bold;
             padding: 5px;
-            background-color: #fd2d2d;
+            background-color: rgba(35, 35, 35, 0.93);
             color: white;
         }
 
@@ -76,6 +76,15 @@
             align-items: center;
             row-gap: 10px;
         }
+
+        #error-message-create-subject, #error-message-edit-subject{
+            display: none;
+            background-color: #fd2d2d;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -123,7 +132,7 @@
                 <input type="text" id="classroom" name="classroom">
                 <button type="submit">Create</button>
                 <button type="button" id="button-close-create-subject">Cancel</button>
-                <!-- TODO: add error message -->
+                <p id="error-message-create-subject">Error: <span id="error-create-subject"></span></p>
             </form>
         </dialog>
         <dialog id="dialog-edit-subject">
@@ -134,7 +143,7 @@
                 <input type="text" id="classroom_edit" name="classroom">
                 <button type="submit">Edit</button>
                 <button type="button" id="button-close-edit-subject">Cancel</button>
-                <!-- TODO: add error message -->
+                <p id="error-message-edit-subject">Error: <span id="error-edit-subject"></span></p>
             </form>
         </dialog>
     </main>
@@ -179,8 +188,10 @@
 
         formCreateSubject.addEventListener('submit', async (event) => {
             event.preventDefault();
+
+            $('#error-message-create-subject').style.display = 'none';
+
             const formData = new FormData(event.target);
-            console.log(Object.fromEntries(formData));
 
             const response = await fetch('/subjects/', {
                 method: 'POST',
@@ -191,8 +202,9 @@
             });
 
             if (!response.ok) {
-                console.error('Error creating subject');
-                //TODO: Show error message
+                const result = await response.json();
+                $('#error-message-create-subject').style.display = 'block';
+                $('#error-create-subject').textContent = result.message;
                 return
             }
 
@@ -211,7 +223,6 @@
             formEditSubject.children.classroom_edit.value = classroom;
 
             dialogEditSubject.showModal();
-            console.log({name, classroom});
         }
 
         Array.from($$('.form-edit-subject')).forEach(form => {
@@ -228,7 +239,6 @@
 
             if (!response.ok) {
                 console.error('Error deleting subject');
-                //TODO: Show error message
                 return
             }
 
@@ -242,6 +252,9 @@
 
         formEditSubject.addEventListener("submit", async (event) => {
             event.preventDefault();
+
+            $('#error-message-edit-subject').style.display = 'none';
+
             const data = Object.fromEntries(new FormData(event.target));
 
             const response = await fetch(`/subjects/${data.name}`, {
@@ -253,8 +266,8 @@
             });
             const result = await response.json();
             if (!response.ok) {
-                console.error('Error editing subject');
-                //TODO: handle error
+                $('#error-message-edit-subject').style.display = 'block';
+                $('#error-edit-subject').textContent = result.message;
                 return
             }
 

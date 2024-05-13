@@ -13,11 +13,11 @@
             top: 10px;
             cursor: pointer;
             border-radius: 5px;
-            border: 1px solid #fd2d2d;
+            border: 1px solid #383838;
             font-size: 16px;
             font-weight: bold;
             padding: 5px;
-            background-color: #fd2d2d;
+            background-color: rgba(35, 35, 35, 0.93);
             color: white;
         }
 
@@ -236,7 +236,6 @@
 
             if (!response.ok) {
                 const error = await response.json();
-                console.error('Error creating teacher');
                 $('#error-create-teacher').textContent = error.message;
                 errorMessageCreateTeacher.style.display = 'block';
                 return
@@ -266,7 +265,6 @@
 
             if (!response.ok) {
                 const error = await response.json();
-                console.error('Error editing teacher');
                 $('#error-edit-teacher').textContent = error.message;
                 errorMessageEditTeacher.style.display = 'block';
                 return
@@ -306,7 +304,6 @@
 
             if (!response.ok) {
                 console.error('Error deleting teacher');
-                //TODO: Show error message
                 return
             }
 
@@ -318,7 +315,7 @@
             form.addEventListener("submit", handleDeleteTeacher);
         })
 
-        function addRowToTable(teacherInfo) {   //TODO: Add buttons to row
+        function addRowToTable(teacherInfo) {
             const row = $('#table-teachers').insertRow(-1);
             const fullNameCell = row.insertCell(0);
             const usernameCell = row.insertCell(1);
