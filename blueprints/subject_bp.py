@@ -5,6 +5,7 @@ from sirope import Sirope
 
 from models.Student import Student
 from models.Subject import Subject
+from models.Teacher import Teacher
 from utils.input_validators import check_empty_string
 
 subject_bp = Blueprint('subject_bp', __name__, url_prefix='/subjects', template_folder='templates')
@@ -56,8 +57,6 @@ def delete(name):
     if not subject:
         return {'message': 'Subject not found'}, 404
 
-    [1,2,3].remove(2)
-
     students = srp.load_all(Student)
     for student in students:
         if name in student.subjects:
@@ -66,6 +65,13 @@ def delete(name):
                 srp.save(student)
             except ValueError:
                 pass
+
+    teachers = srp.load_all(Teacher)
+    for teacher in teachers:
+        if name == teacher.subject:
+            teacher.subject = "<No subject>"
+            srp.save(teacher)
+
 
     srp.delete(subject.__oid__)
     return {'message': 'Subject deleted'}, 204
