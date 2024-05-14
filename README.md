@@ -38,6 +38,21 @@ cd subject-manager
 pip install -r requirements.txt
 ```
 
+Also, you need to create a `.env` file in the root directory of the project with the following content:
+```env
+SECRET_KEY=<your_secret_key>
+```
+
+You can generate a secret key by running the following command in your terminal:
+```bash
+python -c "import uuid; print(uuid.uuid4())"
+```
+
+If you are too lazy to do that :cry:, you can use the following command to generate a secret key and add it to the `.env` file
+```bash
+echo "SECRET_KEY=$(python -c 'import uuid; print(uuid.uuid4())')" > .env
+```
+
 ## Usage
 For usage purposes, you need to have [Redis](https://redis.io/) running on your computer.
 
