@@ -22,6 +22,7 @@ A simple explanation of the database schema:
 ## Features
 - **Login and register**: The application has a login and register page for the admins.
 - **CRUD operations**: The application allows the admin to create, read, update and delete teachers, students and subjects.
+- **Primary keys**: All the information of each model is modifiable, except its primary keys.
 - **Validation**: The application validates the data entered by the admin.
 
 ## Requirements
@@ -58,7 +59,7 @@ For usage purposes, you need to have [Redis](https://redis.io/) running on your 
 
 [OPTIONAL] Once you have Redis running, you can set up initial data for the database by running the following command:
 ```bash
-python set_up_data.py
+python set_up_data.py  # This command does not delete the previous data, only creates new data
 ```
 
 After that, you can run the application by running the following command:
